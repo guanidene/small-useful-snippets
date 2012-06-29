@@ -9,6 +9,8 @@
    by single whitespace
 3. Removes common indentation, using textwrap.dedent
 4. Adjusts output to the std. width of 79 characters (including indentation)
+5. Copies the output to clipboard, so you can directly paste it wherever you
+   want.
 """
 import textwrap as tw
 import pyperclip
@@ -16,14 +18,11 @@ import pyperclip
 ###############################################################################
 # customize this as you require
 MY_DOCSTRING = """
-    The view whose config spec. would be modified temporarily as
-    per the config file gives as input. Note that you need to first yourself
-    set the view. Also, note that the config spec would be modified
-    temporarily, so it might disturb your working in other areas where you are
-    using this view while this script is running. This script would restore the
-    original config spec at the end of its execution. See the note -
-    'RESTRICTION WITH THE USE OF CLEARCASE VIEW' - below."""
-INDENT = ' '*4              # make it '' for no indentation or '#' for comments
+These python snippets are made by me, using little or no
+external api directly. This is different from my other project
+named 'my-first-encounters' as in that one, I have snippets which demonstrate the use of some api.
+"""
+INDENT = ' '*0              # make it '' for no indentation or '#' for comments
 SUBSEQUENT_INDENT = INDENT
 ###############################################################################
 
