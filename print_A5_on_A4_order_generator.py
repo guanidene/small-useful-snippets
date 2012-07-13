@@ -21,25 +21,44 @@ below the last A5 sized page of the LHS stack of A5 sized sheets.
 
 #pylint: disable-msg=R0903,C0103
 
-from math import ceil
+from pyPdf import PdfFileReader, PdfFileWriter
+from math import floor
 
-first_page = 1
-last_page = 124
-# Note: It would be best to have last_page - first_page + 1 divisible by 4.
-# If it is not, you might have atmost 3 1-sided pages, with atmost one
-# wrongly ordered page.
-# XXX. fix this in algo itself, to handle such cases.
+def gen_order(last_page, first_page=1):
 
-order = []
-i = first_page
-t = t_initial = int(ceil(last_page/4.0))*4/2 + 1
+    # Note: It would be best to have last_page - first_page + 1 divisible by 4.
+    # If it is not, you might have atmost 3 1-sided pages, with atmost one
+    # wrongly ordered page.
+    # XXX. fix this in algo itself, to handle such cases.
 
-while (i < t_initial):
-    order.append(i)
-    order.append(t)
-    order.append(t+1)
-    order.append(i+1)
-    i += 2
-    t += 2
+    i = first_page
+    t = t_initial = int(floor(last_page/4.0))*4/2 + 1
 
+    while (i < t_initial):
+        yield i
+        yield t
+        yield t + 1
+        yield i + 1
+        i += 2
+        t += 2
+
+def create_new_pdf(input_pdf_file_path, output_pdf_file_path):
+    input = PdfFileReader(file(input_pdf_file_path, "rb"))
+    print input.isEncrypted
+    input.decrypt('')
+    output = PdfFileWriter()
+
+    total_pages = input.getNumPages()
+    print 'total pages - ', total_pages
+    return
+
+    for page in gen_order(last_page=total_pages): pass
+
+    # finally, write "output" to output_pdf_file_path
+    outputStream = file(output_pdf_file_path, "wb")
+    output.write(outputStream)
+    outputStream.close()
+
+#create_new_pdf('a.pdf', 'b.pdf')
+order = [x for x in gen_order(210)]
 print order
