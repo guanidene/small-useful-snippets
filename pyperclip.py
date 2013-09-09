@@ -42,47 +42,7 @@
 # 1.2 Use the platform module to help determine OS.
 # 1.3 Changed ctypes.windll.user32.OpenClipboard(None) to ctypes.windll.user32.OpenClipboard(0), after some people ran into some TypeError
 
-import platform, os
-
-def winGetClipboard():
-    ctypes.windll.user32.OpenClipboard(0)
-    pcontents = ctypes.windll.user32.GetClipboardData(1) # 1 is CF_TEXT
-    data = ctypes.c_char_p(pcontents).value
-    #ctypes.windll.kernel32.GlobalUnlock(pcontents)
-    ctypes.windll.user32.CloseClipboard()
-    return data
-
-def winSetClipboard(text):
-    GMEM_DDESHARE = 0x2000
-    ctypes.windll.user32.OpenClipboard(0)
-    ctypes.windll.user32.EmptyClipboard()
-    try:
-        # works on Python 2 (bytes() only takes one argument)
-        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text))+1)
-    except TypeError:
-        # works on Python 3 (bytes() requires an encoding)
-        hCd = ctypes.windll.kernel32.GlobalAlloc(GMEM_DDESHARE, len(bytes(text, 'ascii'))+1)
-    pchData = ctypes.windll.kernel32.GlobalLock(hCd)
-    try:
-        # works on Python 2 (bytes() only takes one argument)
-        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text))
-    except TypeError:
-        # works on Python 3 (bytes() requires an encoding)
-        ctypes.cdll.msvcrt.strcpy(ctypes.c_char_p(pchData), bytes(text, 'ascii'))
-    ctypes.windll.kernel32.GlobalUnlock(hCd)
-    ctypes.windll.user32.SetClipboardData(1,hCd)
-    ctypes.windll.user32.CloseClipboard()
-
-def macSetClipboard(text):
-    outf = os.popen('pbcopy', 'w')
-    outf.write(text)
-    outf.close()
-
-def macGetClipboard():
-    outf = os.popen('pbpaste', 'r')
-    content = outf.read()
-    outf.close()
-    return content
+import os
 
 def gtkGetClipboard():
     return gtk.Clipboard().wait_for_text()
@@ -121,36 +81,29 @@ def xselGetClipboard():
     return content
 
 
-if os.name == 'nt' or platform.system() == 'Windows':
-    import ctypes
-    getcb = winGetClipboard
-    setcb = winSetClipboard
-elif os.name == 'mac' or platform.system() == 'Darwin':
-    getcb = macGetClipboard
-    setcb = macSetClipboard
-elif os.name == 'posix' or platform.system() == 'Linux':
-    xclipExists = os.system('which xclip') == 0
-    if xclipExists:
-        getcb = xclipGetClipboard
-        setcb = xclipSetClipboard
-    else:
-        xselExists = os.system('which xsel') == 0
-        if xselExists:
-            getcb = xselGetClipboard
-            setcb = xselSetClipboard
+xclipExists = os.system('which xclip') == 0
+if xclipExists:
+    getcb = xclipGetClipboard
+    setcb = xclipSetClipboard
+else:
+    xselExists = os.system('which xsel') == 0
+    if xselExists:
+        getcb = xselGetClipboard
+        setcb = xselSetClipboard
+    try:
+        import gtk
+        getcb = gtkGetClipboard
+        setcb = gtkSetClipboard
+    except:
         try:
-            import gtk
-            getcb = gtkGetClipboard
-            setcb = gtkSetClipboard
+            import PyQt4.QtCore
+            import PyQt4.QtGui
+            app = QApplication([])
+            cb = PyQt4.QtGui.QApplication.clipboard()
+            getcb = qtGetClipboard
+            setcb = qtSetClipboard
         except:
-            try:
-                import PyQt4.QtCore
-                import PyQt4.QtGui
-                app = QApplication([])
-                cb = PyQt4.QtGui.QApplication.clipboard()
-                getcb = qtGetClipboard
-                setcb = qtSetClipboard
-            except:
-                raise Exception('Pyperclip requires the gtk or PyQt4 module installed, or the xclip command.')
+            raise Exception('Pyperclip requires the gtk or PyQt4 module installed, or the xclip command.')
+
 copy = setcb
 paste = getcb
