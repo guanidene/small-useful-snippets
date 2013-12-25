@@ -1,0 +1,11 @@
+=======================
+pdf-to-latex-table-gui
+=======================
+Copy paste a table from pdf into the gui and get the corresponding
+code for the table in latex. Note that, this works perfectly only
+when the table being copied is opened using "okular" pdf viewer. 
+
+======
+ GUI
+======
+Execute "main.py" to start the GUI
