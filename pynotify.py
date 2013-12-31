@@ -15,6 +15,8 @@ from subprocess import check_output, CalledProcessError
 
 def notify(message='', title=basename(__file__), icon='info'):
     """
+    A simple pythonic interface to the commandline utility 'notify-send'.    
+    
     title: Title of notification
     message: Message of notification
     icon: icon to be used (ex: info, error, dialog-warning, etc.).

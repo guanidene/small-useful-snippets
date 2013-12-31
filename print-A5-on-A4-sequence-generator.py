@@ -20,7 +20,7 @@ DESCRIPTION
     "immediately get" a handbook by cutting the stack of A4 sheets from middle;
     After you cut the stack, put the entire RHS stack of now A5 sheets below
     the last A5 sized page of the LHS stack of A5 sized sheets - and your A5
-    sized book is redy.
+    sized book is ready.
 
     (This should have been a feature in the print dialog of applications like
     Okular or Acrobat Reader, but I think, there isn't.)

@@ -24,7 +24,7 @@ import random
 import argparse
 
 from os.path import basename, join
-from notify import notify
+from pynotify import notify
 import pyperclip
 default_img_save_folder_path = '/home/pushpak/Downloads'
 
